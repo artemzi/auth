@@ -22,14 +22,14 @@ type server struct {
 }
 
 func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
-	log.Info(color.GreenString("Create User email: "), req.GetInfo().Email)
+	log.WithContext(ctx).Info(color.GreenString("Create User email: "), req.GetInfo().Email)
 
-	return &desc.CreateResponse{Id: int64(gofakeit.Uint64())}, nil
+	return &desc.CreateResponse{Id: int64(gofakeit.Int64())}, nil
 
 }
 
 func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
-	log.Info(color.GreenString("Get User id: "), req.GetId())
+	log.WithContext(ctx).Info(color.GreenString("Get User id: "), req.GetId())
 
 	return &desc.GetResponse{
 		User: &desc.User{
@@ -48,14 +48,14 @@ func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 }
 
 func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
-	log.Info(color.GreenString("Update User id: "), req.GetId())
+	log.WithContext(ctx).Info(color.GreenString("Update User id: "), req.GetId())
 	out := new(emptypb.Empty)
 
 	return out, nil
 }
 
 func (s *server) Delete(ctx context.Context, req *desc.DeleteRequest) (*emptypb.Empty, error) {
-	log.Info(color.GreenString("Delete User id: "), req.GetId())
+	log.WithContext(ctx).Info(color.GreenString("Delete User id: "), req.GetId())
 	out := new(emptypb.Empty)
 
 	return out, nil
