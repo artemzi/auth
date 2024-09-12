@@ -29,9 +29,23 @@ type server struct {
 }
 
 func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
-	log.WithContext(ctx).Info(color.GreenString("Create User email: "), req.GetInfo().Email)
+	query := "INSERT INTO \"user\" (name, email, password, password_confirm, role) VALUES ($1, $2, $3, $4, $5) RETURNING id;"
 
-	return &desc.CreateResponse{Id: int64(gofakeit.Int64())}, nil
+	var userID int64
+	err := s.pool.QueryRow(
+		ctx,
+		query,
+		req.GetInfo().Name, req.GetInfo().Email, req.GetInfo().Password, req.GetInfo().PasswordConfirm, req.GetInfo().Role).
+		Scan(&userID)
+	if err != nil {
+		log.Fatalf("failed to insert user: %v", err)
+	}
+
+	log.WithContext(ctx).Infof("inserted user with id: %d", userID)
+
+	return &desc.CreateResponse{
+		Id: userID,
+	}, nil
 
 }
 
@@ -100,7 +114,7 @@ func main() {
 
 	s := grpc.NewServer()
 	reflection.Register(s)
-	desc.RegisterUserAPIV1Server(s, &server{})
+	desc.RegisterUserAPIV1Server(s, &server{pool: pool})
 
 	log.Info(color.GreenString("server listening at "), lis.Addr())
 
