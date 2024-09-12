@@ -39,7 +39,7 @@ func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.Cre
 		req.GetInfo().Name, req.GetInfo().Email, req.GetInfo().Password, req.GetInfo().PasswordConfirm, req.GetInfo().Role).
 		Scan(&userID)
 	if err != nil {
-		log.Errorf("failed to insert user: %v", err)
+		log.Errorf("failed to INSERT user: %v", err)
 		return nil, err
 	}
 
@@ -57,15 +57,14 @@ func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 	var id int64
 	var name, email, role string
 	var createdAt, updatedAt time.Time
-	log.WithContext(ctx).Info(color.GreenString("DEBUG: "), req.GetId())
 
 	err := s.pool.QueryRow(ctx, query, req.GetId()).Scan(&id, &name, &email, &role, &createdAt, &updatedAt)
 	if err != nil {
-		log.Errorf("failed to get user: %v", err)
+		log.Errorf("failed to GET user: %v", err)
 		return nil, err
 	}
 
-	log.WithContext(ctx).Info(color.GreenString("Get User id: "), req.GetId())
+	log.WithContext(ctx).Info(color.GreenString("Got User id: "), req.GetId())
 
 	roleVal, err := strconv.Atoi(role)
 	if err != nil {
@@ -88,14 +87,30 @@ func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetRespon
 }
 
 func (s *server) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
-	log.WithContext(ctx).Info(color.GreenString("Update User id: "), req.GetId())
+	query := "UPDATE \"user\" SET name = $1, email = $2 WHERE id = $3;"
+
+	_, err := s.pool.Exec(ctx, query, req.GetInfo().GetName().Value, req.GetInfo().GetEmail().Value, req.GetId())
+	if err != nil {
+		log.Errorf("failed to UPDATE user: %v", err)
+		return nil, err
+	}
+
+	log.WithContext(ctx).Info(color.GreenString("Updated User id: "), req.GetId())
 	out := new(emptypb.Empty)
 
 	return out, nil
 }
 
 func (s *server) Delete(ctx context.Context, req *desc.DeleteRequest) (*emptypb.Empty, error) {
-	log.WithContext(ctx).Info(color.GreenString("Delete User id: "), req.GetId())
+	query := "DELETE FROM \"user\" WHERE id = $1;"
+
+	_, err := s.pool.Exec(ctx, query, req.GetId())
+	if err != nil {
+		log.Errorf("failed to GET user: %v", err)
+		return nil, err
+	}
+
+	log.WithContext(ctx).Info(color.GreenString("Deleted User id: "), req.GetId())
 	out := new(emptypb.Empty)
 
 	return out, nil
