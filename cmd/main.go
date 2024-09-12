@@ -4,10 +4,11 @@ import (
 	"context"
 	"flag"
 	"net"
+	"strconv"
+	"time"
 
 	"github.com/artemzi/auth/internal/config"
 	desc "github.com/artemzi/auth/pkg/user_v1"
-	"github.com/brianvoe/gofakeit"
 	"github.com/fatih/color"
 	"github.com/jackc/pgx/v4/pgxpool"
 	log "github.com/sirupsen/logrus"
@@ -38,7 +39,8 @@ func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.Cre
 		req.GetInfo().Name, req.GetInfo().Email, req.GetInfo().Password, req.GetInfo().PasswordConfirm, req.GetInfo().Role).
 		Scan(&userID)
 	if err != nil {
-		log.Fatalf("failed to insert user: %v", err)
+		log.Errorf("failed to insert user: %v", err)
+		return nil, err
 	}
 
 	log.WithContext(ctx).Infof("inserted user with id: %d", userID)
@@ -50,20 +52,37 @@ func (s *server) Create(ctx context.Context, req *desc.CreateRequest) (*desc.Cre
 }
 
 func (s *server) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
+	query := "SELECT id, name, email, role, created_at, updated_at FROM \"user\" WHERE id = $1;"
+
+	var id int64
+	var name, email, role string
+	var createdAt, updatedAt time.Time
+	log.WithContext(ctx).Info(color.GreenString("DEBUG: "), req.GetId())
+
+	err := s.pool.QueryRow(ctx, query, req.GetId()).Scan(&id, &name, &email, &role, &createdAt, &updatedAt)
+	if err != nil {
+		log.Errorf("failed to get user: %v", err)
+		return nil, err
+	}
+
 	log.WithContext(ctx).Info(color.GreenString("Get User id: "), req.GetId())
+
+	roleVal, err := strconv.Atoi(role)
+	if err != nil {
+		log.Errorf("failed to parse role: %v", err)
+		return nil, err
+	}
 
 	return &desc.GetResponse{
 		User: &desc.User{
 			Id: req.GetId(),
 			Info: &desc.UserInfo{
-				Name:            gofakeit.BeerName(),
-				Email:           gofakeit.Email(),
-				Password:        "123",
-				PasswordConfirm: "123",
-				Role:            desc.Role_ROLE_ADMIN,
+				Name:  name,
+				Email: email,
+				Role:  desc.Role(roleVal),
 			},
-			CreatedAt: timestamppb.New(gofakeit.Date()),
-			UpdatedAt: timestamppb.New(gofakeit.Date()),
+			CreatedAt: timestamppb.New(createdAt),
+			UpdatedAt: timestamppb.New(updatedAt),
 		},
 	}, nil
 }
