@@ -106,7 +106,7 @@ func (s *server) Delete(ctx context.Context, req *desc.DeleteRequest) (*emptypb.
 
 	_, err := s.pool.Exec(ctx, query, req.GetId())
 	if err != nil {
-		log.Errorf("failed to GET user: %v", err)
+		log.Errorf("failed to DELETE user: %v", err)
 		return nil, err
 	}
 
