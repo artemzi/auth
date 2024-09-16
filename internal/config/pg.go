@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
+// TODO: implement transatcions
 const (
 	dsnEnvName = "PG_DSN"
 )
