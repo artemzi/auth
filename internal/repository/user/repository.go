@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	tableName = "user"
+	tableName = "\"user\""
 
 	idColumn              = "id"
 	nameColumn            = "name"
