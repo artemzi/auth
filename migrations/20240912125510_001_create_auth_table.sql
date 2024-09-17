@@ -9,7 +9,7 @@ CREATE TABLE "user" (
     password_confirm text not null,
     role ROLE default '1',
     created_at timestamp not null default now(),
-    updated_at timestamp not null default now()
+    updated_at timestamp
 );
 
 -- +goose Down
