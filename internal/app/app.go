@@ -14,11 +14,13 @@ import (
 	desc "github.com/artemzi/auth/pkg/user_v1"
 )
 
+// App struct
 type App struct {
 	serviceProvider *serviceProvider
 	grpcServer      *grpc.Server
 }
 
+// NewApp returns new App instance
 func NewApp(ctx context.Context) (*App, error) {
 	a := &App{}
 
@@ -30,6 +32,7 @@ func NewApp(ctx context.Context) (*App, error) {
 	return a, nil
 }
 
+// Run returns new grpc server
 func (a *App) Run() error {
 	defer func() {
 		closer.CloseAll()
