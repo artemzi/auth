@@ -97,15 +97,20 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 // 	return out, nil
 // }
 
-// func (r *repo) Delete(ctx context.Context, id int64) error {
-// 	query := "DELETE FROM \"user\" WHERE id = $1;"
+func (r *repo) Delete(ctx context.Context, id int64) error {
+	query := "DELETE FROM \"user\" WHERE id = $1;"
 
-// 	_, err := r.db.DB().pool.Exec(ctx, query, id)
-// 	if err != nil {
-// 		log.Errorf("failed to DELETE user: %v", err)
-// 		return err
-// 	}
+	q := db.Query{
+		Name:     "user_repository.Delete",
+		QueryRaw: query,
+	}
 
-// 	log.WithContext(ctx).Info(color.GreenString("Deleted User id: "), id)
-// 	return nil
-// }
+	_, err := r.db.DB().ExecContext(ctx, q, id)
+	if err != nil {
+		log.Errorf("failed to DELETE user: %v", err)
+		return err
+	}
+
+	log.WithContext(ctx).Info(color.GreenString("Deleted User id: "), id)
+	return nil
+}
