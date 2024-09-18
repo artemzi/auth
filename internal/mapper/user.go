@@ -40,3 +40,13 @@ func ToUserInfoFromDesc(info *desc.UserInfo) *model.UserInfo {
 		Role:            info.Role.Enum().String(),
 	}
 }
+
+func ToUserFromUpdateDesc(req *desc.UpdateRequest) *model.User {
+	return &model.User{
+		ID: req.Id,
+		Info: model.UserInfo{
+			Name:  req.Info.Name.Value,
+			Email: req.Info.Email.Value,
+		},
+	}
+}

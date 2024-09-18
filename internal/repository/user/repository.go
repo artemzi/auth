@@ -82,20 +82,20 @@ func (r *repo) Get(ctx context.Context, id int64) (*model.User, error) {
 	return mapper.ToUserFromEntity(&user), nil
 }
 
-// func (s *repo) Update(ctx context.Context, req *desc.UpdateRequest) (*emptypb.Empty, error) {
-// 	query := "UPDATE \"user\" SET name = $1, email = $2 WHERE id = $3;"
+func (r *repo) Update(ctx context.Context, user *model.User) error {
+	query := "UPDATE \"user\" SET name = $1, email = $2 WHERE id = $3;"
 
-// 	_, err := s.pool.Exec(ctx, query, req.GetInfo().GetName().Value, req.GetInfo().GetEmail().Value, req.GetId())
-// 	if err != nil {
-// 		log.Errorf("failed to UPDATE user: %v", err)
-// 		return nil, err
-// 	}
+	q := db.Query{Name: "user_repository.Update", QueryRaw: query}
 
-// 	log.WithContext(ctx).Info(color.GreenString("Updated User id: "), req.GetId())
-// 	out := new(emptypb.Empty)
+	_, err := r.db.DB().ExecContext(ctx, q, user.Info.Name, user.Info.Email, user.ID)
+	if err != nil {
+		log.Errorf("failed to UPDATE user: %v", err)
+		return err
+	}
 
-// 	return out, nil
-// }
+	log.WithContext(ctx).Info(color.GreenString("Updated User id: "), user.ID)
+	return nil
+}
 
 func (r *repo) Delete(ctx context.Context, id int64) error {
 	query := "DELETE FROM \"user\" WHERE id = $1;"
