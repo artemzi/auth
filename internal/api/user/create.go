@@ -8,6 +8,7 @@ import (
 	desc "github.com/artemzi/auth/pkg/user_v1"
 )
 
+// Create creates new user
 func (i *Implementation) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
 	id, err := i.userService.Create(ctx, mapper.ToUserInfoFromDesc(req.GetInfo()))
 	if err != nil {

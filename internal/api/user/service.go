@@ -5,11 +5,13 @@ import (
 	desc "github.com/artemzi/auth/pkg/user_v1"
 )
 
+// Implementation is an implementation of UserAPIV1Server.
 type Implementation struct {
 	desc.UnimplementedUserAPIV1Server
 	userService service.UserService
 }
 
+// NewImplementation returns an implementation of UserAPIV1Server.
 func NewImplementation(userService service.UserService) *Implementation {
 	return &Implementation{
 		userService: userService,

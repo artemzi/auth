@@ -8,6 +8,7 @@ import (
 	desc "github.com/artemzi/auth/pkg/user_v1"
 )
 
+// Implementation is the implementation of the user service.
 func (i *Implementation) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
 	userObj, err := i.userService.Get(ctx, req.GetId())
 	if err != nil {
