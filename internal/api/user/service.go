@@ -5,6 +5,7 @@ import (
 	desc "github.com/artemzi/auth/pkg/user_v1"
 )
 
+// TODO: add tests
 // Implementation is an implementation of UserAPIV1Server.
 type Implementation struct {
 	desc.UnimplementedUserAPIV1Server
