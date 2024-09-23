@@ -5,10 +5,12 @@ import (
 	"os"
 )
 
+// TODO: implement transatcions
 const (
 	dsnEnvName = "PG_DSN"
 )
 
+// PGConfig is a config interface for PostgreSQL.
 type PGConfig interface {
 	DSN() string
 }
@@ -17,6 +19,7 @@ type pgConfig struct {
 	dsn string
 }
 
+// NewPGConfig returns a new PGConfig instance.
 func NewPGConfig() (PGConfig, error) {
 	dsn := os.Getenv(dsnEnvName)
 	if len(dsn) == 0 {
