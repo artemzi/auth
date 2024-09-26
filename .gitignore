@@ -1,0 +1,6 @@
+.idea
+/bin/
+.vscode
+__debug*/coverage.out
+vendor.protogen
+/coverage.out
